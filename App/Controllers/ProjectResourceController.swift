@@ -8,7 +8,7 @@
 import Vapor
 import HTTP
 
-final class ProjectResourceController: ProjectResourceProtocol, ResourceRepresentable {    
+final class ProjectResourceController: ProjectResourceProtocol, ResourceRepresentable {
     // When users call 'GET' on '/projects'
     // it should return an index of all available projects
     func index(_ req: Request) throws -> ResponseRepresentable {
