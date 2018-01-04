@@ -55,7 +55,7 @@ extension ProjectResource: Preparation {
     static func prepare(_ database: Database) throws {
         try database.create(self) { builder in
             builder.id()
-            builder.string(ProjectResource.Keys.project_id)
+            builder.int(ProjectResource.Keys.project_id)
             builder.string(ProjectResource.Keys.type)
             builder.string(ProjectResource.Keys.link)
         }

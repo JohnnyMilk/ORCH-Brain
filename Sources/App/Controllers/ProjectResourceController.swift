@@ -18,7 +18,7 @@ final class ProjectResourceController: ProjectResourceProtocol, ResourceRepresen
     // When consumers call 'POST' on '/posts' with valid JSON
     // construct and save the project
     func store(_ req: Request) throws -> ResponseRepresentable {
-        let projectResource = try req.project()
+        let projectResource = try req.projectResource()
         try projectResource.save()
         return projectResource
     }
