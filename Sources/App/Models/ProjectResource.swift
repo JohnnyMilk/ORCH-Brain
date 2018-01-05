@@ -19,24 +19,28 @@ enum ProjectResourceType: String {
 final class ProjectResource: Model {
     let storage = Storage()
     var project_id: Int
+    var name: String
     var type: ProjectResourceType.RawValue
     var link: String
     
     struct Keys {
         static let id = "id"
         static let project_id = "project_id"
+        static let name = "name"
         static let type = "type"
         static let link = "link"
     }
     
-    init(project_id: Int, type: ProjectResourceType.RawValue, link: String) {
+    init(project_id: Int, name: String, type: ProjectResourceType.RawValue, link: String) {
         self.project_id = project_id
+        self.name = name
         self.type = type
         self.link = link
     }
     
     init(row: Row) throws {
         project_id = try row.get(ProjectResource.Keys.project_id)
+        name = try row.get(ProjectResource.Keys.name)
         type = try row.get(ProjectResource.Keys.type)
         link = try row.get(ProjectResource.Keys.link)
     }
@@ -44,6 +48,7 @@ final class ProjectResource: Model {
     func makeRow() throws -> Row {
         var row = Row()
         try row.set(ProjectResource.Keys.project_id, project_id)
+        try row.set(ProjectResource.Keys.name, name)
         try row.set(ProjectResource.Keys.type, type)
         try row.set(ProjectResource.Keys.link, link)
         return row
@@ -56,6 +61,7 @@ extension ProjectResource: Preparation {
         try database.create(self) { builder in
             builder.id()
             builder.int(ProjectResource.Keys.project_id)
+            builder.string(ProjectResource.Keys.name)
             builder.string(ProjectResource.Keys.type)
             builder.string(ProjectResource.Keys.link)
         }
@@ -71,6 +77,7 @@ extension ProjectResource: JSONConvertible {
     convenience init(json: JSON) throws {
         self.init(
             project_id: try json.get(ProjectResource.Keys.project_id),
+            name: try json.get(ProjectResource.Keys.name),
             type: try json.get(ProjectResource.Keys.type),
             link: try json.get(ProjectResource.Keys.link)
         )
@@ -80,6 +87,7 @@ extension ProjectResource: JSONConvertible {
         var json = JSON()
         try json.set(ProjectResource.Keys.id, id)
         try json.set(ProjectResource.Keys.project_id, project_id)
+        try json.set(ProjectResource.Keys.name, name)
         try json.set(ProjectResource.Keys.type, type)
         try json.set(ProjectResource.Keys.link, link)
         return json
@@ -97,6 +105,9 @@ extension ProjectResource: Updateable {
             // the setter callback will be called.
             UpdateableKey(ProjectResource.Keys.project_id, Int.self) { resource, project_id in
                 resource.project_id = project_id
+            },
+            UpdateableKey(ProjectResource.Keys.name, String.self) { resource, type in
+                resource.name = name
             },
             UpdateableKey(ProjectResource.Keys.type, String.self) { resource, type in
                 resource.type = type
