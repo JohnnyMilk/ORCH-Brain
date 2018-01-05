@@ -106,7 +106,7 @@ extension ProjectResource: Updateable {
             UpdateableKey(ProjectResource.Keys.project_id, Int.self) { resource, project_id in
                 resource.project_id = project_id
             },
-            UpdateableKey(ProjectResource.Keys.name, String.self) { resource, type in
+            UpdateableKey(ProjectResource.Keys.name, String.self) { resource, name in
                 resource.name = name
             },
             UpdateableKey(ProjectResource.Keys.type, String.self) { resource, type in
