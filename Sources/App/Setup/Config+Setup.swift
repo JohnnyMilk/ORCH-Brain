@@ -19,6 +19,7 @@ extension Config {
     /// schemas prepared before the app boots
     private func setupPreparations() throws {
         preparations.append(Project.self)
+        preparations.append(ResourceType.self)
         preparations.append(ProjectResource.self)
     }
 }

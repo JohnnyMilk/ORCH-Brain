@@ -9,14 +9,14 @@ import Vapor
 import HTTP
 
 final class ProjectResourceController: ProjectResourceProtocol, ResourceRepresentable {
-    // When users call 'GET' on '/projects'
-    // it should return an index of all available projects
+    // When users call 'GET' on '/resources'
+    // it should return an index of all available resources
     func index(_ req: Request) throws -> ResponseRepresentable {
         return try ProjectResource.all().makeJSON()
     }
     
-    // When consumers call 'POST' on '/posts' with valid JSON
-    // construct and save the project
+    // When consumers call 'POST' on '/resources' with valid JSON
+    // construct and save the resource
     func store(_ req: Request) throws -> ResponseRepresentable {
         let projectResource = try req.projectResource()
         try projectResource.save()
@@ -24,20 +24,20 @@ final class ProjectResourceController: ProjectResourceProtocol, ResourceRepresen
     }
     
     // When the consumer calls 'GET' on a specific resource, ie:
-    // '/projects/1' we should show that specific project
+    // '/resources/1' we should show that specific resource
     func show(_ req: Request, projectResource: ProjectResource) throws -> ResponseRepresentable {
         return projectResource
     }
     
     // When the consumer calls 'DELETE' on a specific resource, ie:
-    // '/projects/1' we should remove that resource from the database
+    // '/resources/1' we should remove that resource from the database
     func delete(_ req: Request, projectResource: ProjectResource) throws -> ResponseRepresentable {
         try projectResource.delete()
         return Response(status: .ok)
     }
     
     // When the consumer calls 'DELETE' on the entire table, ie:
-    // '/projects' we should remove the entire table
+    // '/resources' we should remove the entire table
     func clear(_ req: Request) throws -> ResponseRepresentable {
         try ProjectResource.makeQuery().delete()
         return Response(status: .ok)

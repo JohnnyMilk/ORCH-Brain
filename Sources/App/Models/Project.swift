@@ -12,28 +12,33 @@ import HTTP
 final class Project: Model {
     let storage = Storage()
     var name: String
-    var abbreviation: String
+    var abbreviation: String?
+    var remark: String?
     
     struct Keys {
         static let id = "id"
         static let name = "name"
         static let abbreviation = "abbreviation"
+        static let remark = "remark"
     }
     
-    init(name: String, abbreviation: String) {
+    init(name: String, abbreviation: String?, remark: String?) {
         self.name = name
         self.abbreviation = abbreviation
+        self.remark = remark
     }
     
     init(row: Row) throws {
         name = try row.get(Project.Keys.name)
         abbreviation = try row.get(Project.Keys.abbreviation)
+        remark = try row.get(Project.Keys.remark)
     }
     
     func makeRow() throws -> Row {
         var row = Row()
         try row.set(Project.Keys.name, name)
         try row.set(Project.Keys.abbreviation, abbreviation)
+        try row.set(Project.Keys.remark, remark)
         return row
     }
 }
@@ -45,6 +50,7 @@ extension Project: Preparation {
             builder.id()
             builder.string(Project.Keys.name)
             builder.string(Project.Keys.abbreviation, optional: true)
+            builder.string(Project.Keys.remark, optional: true)
         }
     }
     
@@ -58,7 +64,8 @@ extension Project: JSONConvertible {
     convenience init(json: JSON) throws {
         self.init(
             name: try json.get(Project.Keys.name),
-            abbreviation: try json.get(Project.Keys.abbreviation)
+            abbreviation: try json.get(Project.Keys.abbreviation),
+            remark: try json.get(Project.Keys.remark)
         )
     }
     
@@ -67,6 +74,7 @@ extension Project: JSONConvertible {
         try json.set(Project.Keys.id, id)
         try json.set(Project.Keys.name, name)
         try json.set(Project.Keys.abbreviation, abbreviation)
+        try json.set(Project.Keys.remark, remark)
         return json
     }
 }
@@ -78,13 +86,14 @@ extension Project: ResponseRepresentable { }
 extension Project: Updateable {
     public static var updateableKeys: [UpdateableKey<Project>] {
         return [
-            // If the request contains a String at key "content"
-            // the setter callback will be called.
             UpdateableKey(Project.Keys.name, String.self) { project, name in
                 project.name = name
             },
             UpdateableKey(Project.Keys.abbreviation, String.self) { project, abbreviation in
                 project.abbreviation = abbreviation
+            },
+            UpdateableKey(Project.Keys.remark, String.self) { project, remark in
+                project.remark = remark
             }
         ]
     }

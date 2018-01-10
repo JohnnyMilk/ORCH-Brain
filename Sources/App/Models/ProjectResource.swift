@@ -9,19 +9,13 @@ import Vapor
 import FluentProvider
 import HTTP
 
-enum ProjectResourceType: String {
-    case apk = "apk"
-    case ipaHtml = "ipaHtml"
-    
-    static let allValues = [apk, ipaHtml]
-}
-
 final class ProjectResource: Model {
     let storage = Storage()
     var project_id: Int
     var name: String
-    var type: ProjectResourceType.RawValue
+    var type: Int
     var link: String
+    var remark: String?
     
     struct Keys {
         static let id = "id"
@@ -29,13 +23,15 @@ final class ProjectResource: Model {
         static let name = "name"
         static let type = "type"
         static let link = "link"
+        static let remark = "remark"
     }
     
-    init(project_id: Int, name: String, type: ProjectResourceType.RawValue, link: String) {
+    init(project_id: Int, name: String, type: Int, link: String, remark: String?) {
         self.project_id = project_id
         self.name = name
         self.type = type
         self.link = link
+        self.remark = remark
     }
     
     init(row: Row) throws {
@@ -43,6 +39,7 @@ final class ProjectResource: Model {
         name = try row.get(ProjectResource.Keys.name)
         type = try row.get(ProjectResource.Keys.type)
         link = try row.get(ProjectResource.Keys.link)
+        remark = try row.get(ProjectResource.Keys.remark)
     }
     
     func makeRow() throws -> Row {
@@ -51,6 +48,7 @@ final class ProjectResource: Model {
         try row.set(ProjectResource.Keys.name, name)
         try row.set(ProjectResource.Keys.type, type)
         try row.set(ProjectResource.Keys.link, link)
+        try row.set(ProjectResource.Keys.remark, remark)
         return row
     }
 }
@@ -60,10 +58,13 @@ extension ProjectResource: Preparation {
     static func prepare(_ database: Database) throws {
         try database.create(self) { builder in
             builder.id()
-            builder.foreignKey(ProjectResource.Keys.project_id, references: "id", on: Project.self)
+            builder.int(ProjectResource.Keys.project_id)
+            builder.foreignKey(ProjectResource.Keys.project_id, references: Project.Keys.id, on: Project.self)
             builder.string(ProjectResource.Keys.name)
-            builder.string(ProjectResource.Keys.type)
+            builder.int(ProjectResource.Keys.type)
+            builder.foreignKey(ProjectResource.Keys.type, references: ResourceType.Keys.id, on: ResourceType.self)
             builder.string(ProjectResource.Keys.link)
+            builder.string(ProjectResource.Keys.remark, optional: true)
         }
     }
     
@@ -79,7 +80,8 @@ extension ProjectResource: JSONConvertible {
             project_id: try json.get(ProjectResource.Keys.project_id),
             name: try json.get(ProjectResource.Keys.name),
             type: try json.get(ProjectResource.Keys.type),
-            link: try json.get(ProjectResource.Keys.link)
+            link: try json.get(ProjectResource.Keys.link),
+            remark: try json.get(ProjectResource.Keys.remark)
         )
     }
     
@@ -90,6 +92,7 @@ extension ProjectResource: JSONConvertible {
         try json.set(ProjectResource.Keys.name, name)
         try json.set(ProjectResource.Keys.type, type)
         try json.set(ProjectResource.Keys.link, link)
+        try json.set(ProjectResource.Keys.remark, remark)
         return json
     }
 }
@@ -101,19 +104,20 @@ extension ProjectResource: ResponseRepresentable { }
 extension ProjectResource: Updateable {
     public static var updateableKeys: [UpdateableKey<ProjectResource>] {
         return [
-            // If the request contains a String at key "content"
-            // the setter callback will be called.
             UpdateableKey(ProjectResource.Keys.project_id, Int.self) { resource, project_id in
                 resource.project_id = project_id
             },
             UpdateableKey(ProjectResource.Keys.name, String.self) { resource, name in
                 resource.name = name
             },
-            UpdateableKey(ProjectResource.Keys.type, String.self) { resource, type in
+            UpdateableKey(ProjectResource.Keys.type, Int.self) { resource, type in
                 resource.type = type
             },
             UpdateableKey(ProjectResource.Keys.link, String.self) { resource, link in
                 resource.link = link
+            },
+            UpdateableKey(ProjectResource.Keys.remark, String.self) { resource, remark in
+                resource.remark = remark
             }
         ]
     }
