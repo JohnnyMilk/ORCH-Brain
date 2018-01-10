@@ -73,7 +73,7 @@ extension ResourceType: JSONConvertible {
         var json = JSON()
         try json.set(ResourceType.Keys.id, id)
         try json.set(ResourceType.Keys.name, name)
-        try json.set(ResourceType.Keys.remark, remark)
+        if (remark != nil) { try json.set(ResourceType.Keys.remark, remark) }
         return json
     }
 }

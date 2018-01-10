@@ -74,7 +74,7 @@ extension Project: JSONConvertible {
         try json.set(Project.Keys.id, id)
         try json.set(Project.Keys.name, name)
         try json.set(Project.Keys.abbreviation, abbreviation)
-        try json.set(Project.Keys.remark, remark)
+        if (remark != nil) { try json.set(Project.Keys.remark, remark) }
         return json
     }
 }
