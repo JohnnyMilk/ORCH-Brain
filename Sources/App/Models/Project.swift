@@ -98,4 +98,3 @@ extension Project: Updateable {
         ]
     }
 }
-
