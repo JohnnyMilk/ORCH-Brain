@@ -18,7 +18,6 @@ extension Droplet {
         
         get("project", Int.parameter, "resources") { req in
             let proojectID = try req.parameters.next(Int.self)
-            
             return try self.formatJSONDataWithReadableValue(resources: try ProjectResource.makeQuery().filter("project_id", .equals, proojectID).all())
         }
 
@@ -26,6 +25,17 @@ extension Droplet {
             let typeID = try req.parameters.next(Int.self)
             
             return try self.formatJSONDataWithReadableValue(resources: try ProjectResource.makeQuery().filter("type_id", .equals, typeID).all())
+        }
+        
+        get("appboot/dsiwant") { req in
+            let agent = req.headers["User-Agent"]
+            if (agent?.contains("iPhone"))! {
+                return Response(redirect: "https://opendata.doubleservice.com/app/dsiwant.html")
+            }
+            if (agent?.contains("Android"))! {
+                return Response(redirect: "https://opendata.doubleservice.com/app/dsiwant.apk")
+            }
+        return "請使用 Android or iPhone 手機存取此畫面!!"
         }
     }
     
